@@ -1,6 +1,6 @@
 # Text classifcation for sentiment analysis using Mxnet
 
-In this notebook, we are going to classify sentiment by building a neural network using mxnet.  The neural network will take a movie review as input and tries to identify the if the movie express a positive or negative opinion about the movie. We will start with simple dense model and then build model similar to (Yoon Kim's)[https://arxiv.org/abs/1408.5882] paper We will also visualize the output using tnse(visualization techniques for high dimensional data). Finally, we will use transfer learning to use pre-built embedding(glove)[https://nlp.stanford.edu/projects/glove/] in our neural network to classify sentences.
+In this notebook, we are going to classify sentiment by building a neural network using mxnet.  The neural network will take a movie review as input and tries to identify the if the movie express a positive or negative opinion about the movie. We will start with simple dense model and then build model similar to [Yoon Kim's](https://arxiv.org/abs/1408.5882) paper We will also visualize the output using tnse (visualization techniques for high dimensional data). Finally, we will use transfer learning to use pre-built embedding[glove](https://nlp.stanford.edu/projects/glove/) in our neural network to classify sentences.
 
 Although there are many deep learning frameworks (TensorFlow, Keras, Torch, Caffee), mxnet is gaining popularity due to its scalability across multiple GPU.
 
@@ -12,7 +12,7 @@ By the end of the notebook, you will be able to
 2. Understand embedding and their use.
 3. Prepare dataset for training neural network.
 4. Implement custom neural network architecture for classifying sentiment using various different models.
-5. Visualize the result and understand our model using (t-sne)[https://en.wikipedia.org/wiki/T-distributed_stochastic_neighbor_embedding]. 
+5. Visualize the result and understand our model using [t-sne](https://en.wikipedia.org/wiki/T-distributed_stochastic_neighbor_embedding). 
 6. Use prebuilt embedding like glove to train on data with constraints(small dataset or small sentences). 
 
 ## Sentiment Analysis
@@ -47,12 +47,12 @@ Now, lets us try to encode the sentence.
 The Setences "I hate pizza" will become a matrix shown below.
 
  If the word is present in the sentence, then corresponding row of the  vocabulary matrix is copied. This is the same operation that is performed by the embedding layer of the mxnet(or any other deep learning framework).
- (Embedding layer)[http://mxnet.io/api/python/symbol.html#mxnet.symbol.Embedding] just peforms the look up operations and should not be confused with (word-embedding)[https://en.wikipedia.org/wiki/Word_embedding].
+ [Embedding layer](http://mxnet.io/api/python/symbol.html#mxnet.symbol.Embedding) just peforms the look up operations and should not be confused with [word-embedding](https://en.wikipedia.org/wiki/Word_embedding).
 
 Can we do better than one-code encoding the vocabulary?. Is there a better way to represent the words?. Word embedding solves this problem. Instead of discretizing the words, it provides a continous represantation of words. A word embedding matrix can look like this.
 
 Instead of the representing the word as NXN matrix, we represent the words with N*3 matrix, where there 3 is embedding size. So each word can be represented as a 3 dimensional vector, instead of N dimensional vector. Words embedding not only reduces the size of representation of vocabulary matrix, but tries to bring bring semantic relationship between words. For example,
-"pizza" and "cake" have nearly similar word embedding, since both refers to type of food. "Love" and "Hate" have same magnitude in 2nd dimension since they convey feelings  but entriely different magnitude in 1st dimension (0.9 and 0.1 respectively) since they convey opposite sentiments. Embedding words into smaller dimensions can help us in several ways . These embedding can be learnt by deep neural network automatically during sentiment classification. The vector of particular words can be treated as weights that needs to be learnt by deep neural network. The embedding technqiues can be used on images and other data and commonly popularised as (autoencoder)[https://en.wikipedia.org/wiki/Autoencoder] networks.
+"pizza" and "cake" have nearly similar word embedding, since both refers to type of food. "Love" and "Hate" have same magnitude in 2nd dimension since they convey feelings  but entriely different magnitude in 1st dimension (0.9 and 0.1 respectively) since they convey opposite sentiments. Embedding words into smaller dimensions can help us in several ways . These embedding can be learnt by deep neural network automatically during sentiment classification. The vector of particular words can be treated as weights that needs to be learnt by deep neural network. The embedding technqiues can be used on images and other data and commonly popularised as [autoencoder](https://en.wikipedia.org/wiki/Autoencoder) networks.
 
 
 ## Convolutional  on sentences.
