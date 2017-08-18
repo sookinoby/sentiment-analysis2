@@ -1,4 +1,4 @@
-# Text classification for sentiment analysis using MXNet
+# Sentiment analysis using MXNet
 
 In this notebook, we are going to classify sentiment by building a neural network using MXNet.  The neural network will take a movie review as input and tries to identify it expresses a positive or negative opinion about the movie. We will start with a simple dense model and then build a model similar to [Yoon Kim's](https://arxiv.org/abs/1408.5882) paper. We will also visualize the output using [t-nse](https://en.wikipedia.org/wiki/T-distributed_stochastic_neighbor_embedding), a visualization technique for high dimensional data. Finally, we will use transfer learning to use pre-built embedding[glove](https://nlp.stanford.edu/projects/glove/) in our neural network to classify sentences.
 
