@@ -41,17 +41,24 @@ Lets us consider two sentences formed out of this vocabulary.
 "I love cake"  
 "I hate pizza"
 
-How can we encode theses sentences in as numbers? One way is to represent the vocabulary like one hot encoded matrix as shown below.
+How can we encode theses sentences as numbers? One way is to represent the vocabulary like one hot encoded matrix as shown below.
+
+![Alt text](images/vocab.png?raw=true "one hot encoded vocabulary")
+
 
 In this representation, if there are N words in the vocabulary, we need a matrix of size NXN. This matrix is called as vocabulary matrix. Vocabulary matrix forms the look-up table for the word.
 
 Now, let's us try to encode the sentence.
 The Sentence "I hate pizza" will become a matrix shown below.
 
+![Alt text](images/sentence.png?raw=true "sentence encoding")
+
  If the word is present in the sentence, then corresponding row of the vocabulary matrix is copied. This is the same operation that is performed by the embedding layer of the MXNet (or any other deep learning framework).
  [Embedding layer](http://mxnet.io/api/python/symbol.html#mxnet.symbol.Embedding) just performs the look up operations and should not be confused with [word-embedding](https://en.wikipedia.org/wiki/Word_embedding).
 
-Can we do better than one-code encoding the vocabulary?. Is there a better way to represent the words?. Word embedding solves this problem. Instead of discretizing the words, it provides a continuous representation of words. A word embedding matrix can look like this.
+Can we do better than one-code encoding the vocabulary?. Is there a better way to represent the words?. Word embedding solves this problem. Instead of discretizing the words, it provides a continuous representation of words. A word embedding matrix can look like a matrix shown below.
+
+![Alt text](images/embedding.png?raw=true "embedding matrix")
 
 Instead of the representing the word as NXN matrix, we represent the words with a N*3 matrix, where '3' is embedding size. So each word can be represented as a 3-dimensional vector, instead of N dimensional vector. 
 
@@ -60,9 +67,14 @@ Words embedding not only reduces the size of the representation of vocabulary ma
 These embedding can be learned by deep neural network automatically during sentiment classification. The embedding vector of particular words can be treated as weights that need to be learned by the deep neural network. The embedding techniques can be used on images and other data and commonly popularized as [autoencoder](https://en.wikipedia.org/wiki/Autoencoder) networks.
 
 
-## Convolutional on sentences.
+## Convolution on sentences.
 
-Once the sentence has been encoded into a matrix using embedding layer, we can perform the convolution of size filter_size * embedding. as shown below. This will help to learn based on the [n-grams](https://en.wikipedia.org/wiki/N-gram) from the sequence.
+Once the sentence has been encoded into a matrix using embedding layer, we can perform the convolution of size filter_size * embedding as shown below. 
+
+![Alt text](images/embedding.png?raw=true " Convolution operation")
+
+ The convolution operation in the edges assumes the input is padded with zeros.
+ This convolution operation will help to learn based on the [n-grams](https://en.wikipedia.org/wiki/N-gram) from the sequence.
 
 Next, we will look into how sentiment classification is performed using MXNet.
 
@@ -340,8 +352,8 @@ for idx, (x, y) in enumerate(zip(Y[:, 0], Y[:, 1])):
     plt.annotate(idx2word[idx], xy=(x, y), xytext=(0, 0), textcoords='offset points')
 ```
 
-Here are the visualized traffic signs, with their labels:
-![Alt text](images/vis.png?raw=true "traffic sign visualization")
+Here is the t-nse visualization of the weights of top 500 words:
+![Alt text](images/embedding1.png?raw=true "t-nse visualization")
 
 The visualization shows that the model automatically learnt that the words "excellent, wonderful, amazing" means the same thing. This is quite wonderful. Next, we will write a simple predict function to use the model generated.
 
@@ -483,6 +495,9 @@ plt.scatter(Y[:, 0], Y[:, 1])
 for idx, (x, y) in enumerate(zip(Y[:, 0], Y[:, 1])):
     plt.annotate(idx2word[idx], xy=(x, y), xytext=(0, 0), textcoords='offset points')
 ```
+
+Here is the t-nse visualization of the first 500 words glove 1wembedding:
+![Alt text](images/embedding2.png?raw=true "t-nse visualization")
 
 As you can see, the embedding has grouped similar words(worse, worst, bad, terrible) together. Let us use this embedding to create a neural network to classify sentences. Adding the pre-trained weights to the neural network can be little tricky. Below is the code
 
