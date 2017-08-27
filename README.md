@@ -93,7 +93,7 @@ Here's how to get set up:
 The next 3 steps help in visualizing the word-embedding and are not mandatory. I highly recommend visualizing the results though.
 
 5. Next, we need [cython](https://anaconda.org/anaconda/cython) required for bhtnse
-6. We also need [bhtsne](https://github.com/dominiek/python-bhtsne), A c++, python implementation of tnse.  Don't use scikit-learn's tnse implementation as it crashes the python kernel, refer this Github thread to know more: (https://github.com/scikit-learn/scikit-learn/issues/4619)
+6. We also need [bhtsne](https://github.com/dominiek/python-bhtsne), A c++, python implementation of tnse. Don't use scikit-learn's tnse implementation as it [crashes the python kernel](https://github.com/scikit-learn/scikit-learn/issues/4619). 
 7. Finally, we need [matplotlib](https://anaconda.org/anaconda/matplotlib) for plots and visualization.  
 
 Here are the commands you need to type inside the anaconda environment (after its activation ):
@@ -107,11 +107,11 @@ Here are the commands you need to type inside the anaconda environment (after it
 8. conda install -c anaconda matplotlib
 
 ## The data set
-In order to learn about any deep neural network, we need data. For this notebook, we use a movie review dataset from Stanford. Here is the [link](http://ai.stanford.edu/~amaas/data/sentiment/aclImdb_v1.tar.gz)
+In order to learn about any deep neural network, we need data. For this notebook, we use a movie review dataset from Stanford. You can download the data set [here](http://ai.stanford.edu/~amaas/data/sentiment/aclImdb_v1.tar.gz)
 
 The data set consists of 25000 samples in train set and 25000 samples in test set, with 12500 positive and 12500 negative sentiments in each set. We will only be using the training set that will be randomly split into train, validation and test sets. As discussed earlier, sentiment analysis is a complex task and its accuracy depends on the dataset. A model should be tested on a variety of data before deploying to production.
 
-Here's the code for loading the data. We assign a label of 1 for positive sentiment and 0 for negative sentiment. We won't be one-hot encoding the labels since we’ll use [softmaxoutput](http://mxnet.io/api/python/symbol.html#mxnet.symbol.SoftmaxOutput) layer of MXnet to perform classification.
+Here's the code for loading the data. We assign a label of 1 for positive sentiment and 0 for negative sentiment. We won't be one-hot encoding the labels since we will use [softmaxoutput](http://mxnet.io/api/python/symbol.html#mxnet.symbol.SoftmaxOutput) layer of MXnet to perform classification.
 
 In another framework, one-hot encoding the labels might be necessary.
 
@@ -140,8 +140,10 @@ negative_labels = [0 for _ in negative_sentiment]
 ```
 
 
-## preparing the dataset and encoding
-The reviews are cleaned to remove URLs, special characters, etc. You can also use the [nltk](http://www.nltk.org/) library to preprocess the text. We use a custom function to clean the data. Once the data is cleaned, we need to form the vocabulary (all the unique words available in a dataset). Next, we need to identify the most common words in the review.  This prevents rare words like 'director name, actor name' to influence the outcome of a classifier. We also map each word(sorted by descending order based on the frequency of occurrence) to a unique number which is stored in a dictionary called word_dict. We also perform the inverse mapping from the idx to the word. We use a vocabulary of 5000 words. The vocabulary size, sentences length, and embedding dimensions are also parameters and can be experimented with while building a neural network.
+## Preparing the dataset and encoding
+The reviews are cleaned to remove URLs, special characters, etc. You can also use the [nltk](http://www.nltk.org/) library to preprocess the text. We use a custom function to clean the data. Once the data is cleaned, we need to form the vocabulary (all the unique words available in a dataset).
+
+Next, we need to identify the most common words in the review.  This prevents rare words like 'director name, actor name' to influence the outcome of a classifier. We also map each word(sorted by descending order based on the frequency of occurrence) to a unique number which is stored in a dictionary called word_dict. We also perform the inverse mapping from the idx to the word. We use a vocabulary of 5000 words. The vocabulary size, sentences length, and embedding dimensions are also parameters and can be experimented with while building a neural network.
 
 ```python
 #some string preprocessing
@@ -397,7 +399,7 @@ The output is
 Next, we will look into convolution network for sentiment classifier which can capture information in n-grams.
 
 
-## building the convolution model.
+## Building the convolution model.
 As discussed earlier, to develop a model based on n-grams, we need a convolution neural network. So let us develop one. This is very similar to the previous model but has a convolution filter of size 5.
 
 ```python
@@ -413,7 +415,7 @@ convnet = mx.sym.SoftmaxOutput(data=fc2_2, name='softmax')
 
 The only tricky thing is the 'conv_input_2' input layer. This layer reshapes the output from the embedding layer into a format that is needed by the convolution layer. Everything else remains the same. This model can be trained using model.fit function and various insights can be obtained.
 
-## building the 'multiple convolution' model.
+## Building the 'multiple convolution' model.
 
 This is similar to the previous model, except that we use convolution of different sizes (3,4,5) for developing a model based on 3-gram,4-gram,5-gram, then concatenate and flatten the output. A maxpool layer is added to prevent over fitting. Below is the code in python
 
