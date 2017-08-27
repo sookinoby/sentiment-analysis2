@@ -41,6 +41,7 @@ Two sentences are formed out of this vocabulary.
 "I hate pizza"
 
 How can we encode theses sentences as numbers? One way is to represent the vocabulary like an encoded matrix as shown below.
+
 ![Alt text](images/vocab.png?raw=true "one hot encoded vocabulary")
 
 
@@ -78,7 +79,7 @@ Next, we will look into how sentiment classification is performed using MXNet.
 
 
 ## Preparing your environment
-If you're working in the AWS Cloud, you can save yourself the installation management by using a [Amazon Machine Image (AMI)(https://aws.amazon.com/marketplace/pp/B01M0AXXQB#support), pre-configured for deep learning. This will enable you to skip steps 1-5 below.  
+If you're working in the AWS Cloud, you can save yourself the installation management by using a [Amazon Machine Image](https://aws.amazon.com/marketplace/pp/B01M0AXXQB#support), pre-configured for deep learning. This will enable you to skip steps 1-5 below.  
 
 Note that if you are using a Conda environment, remember to install pip inside conda by typing 'conda install pip' after you activate an environment. This step will save you a lot of problems down the road.
 
@@ -92,7 +93,7 @@ Here's how to get set up:
 The next 3 steps help in visualizing the word-embedding and are not mandatory. I highly recommend visualizing the results though.
 
 5. Next, we need [cython](https://anaconda.org/anaconda/cython) required for bhtnse
-6. We also need[bhtsne](https://github.com/dominiek/python-bhtsne), A c++, python implementation of tnse.  Don't use scikit-learn's tnse implementation as it crashes the python kernel, refer this Github thread to know more: (https://github.com/scikit-learn/scikit-learn/issues/4619)
+6. We also need [bhtsne](https://github.com/dominiek/python-bhtsne), A c++, python implementation of tnse.  Don't use scikit-learn's tnse implementation as it crashes the python kernel, refer this Github thread to know more: (https://github.com/scikit-learn/scikit-learn/issues/4619)
 7. Finally, we need [matplotlib](https://anaconda.org/anaconda/matplotlib) for plots and visualization.  
 
 Here are the commands you need to type inside the anaconda environment (after its activation ):
