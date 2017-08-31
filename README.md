@@ -1,10 +1,10 @@
 # Sentiment analysis using MXNet
 
-In this notebook, we are going to classify sentiment by building a neural network using MXNet.  The neural network will take a movie review as input and try to identify it and express a positive or negative opinion about the movie. We will start with a simple dense model and then build a model similar to [Yoon Kim's](https://arxiv.org/abs/1408.5882) paper. We will also visualize the output using [t-nse](https://en.wikipedia.org/wiki/T-distributed_stochastic_neighbor_embedding), a visualization technique for high dimensional data. Finally, we will use transfer learning to use pre-built embedding[glove](https://nlp.stanford.edu/projects/glove/) in our neural network to classify sentences.
+In this notebook, we are going to classify sentiment by building a neural network using MXNet.  The neural network will take a movie review as input and try to identify it and express a positive or negative opinion about the movie. We will start with a simple dense model and then build a model similar to [Yoon Kim's](https://arxiv.org/abs/1408.5882) paper. We will also visualize the output using [t-nse](https://en.wikipedia.org/wiki/T-distributed_stochastic_neighbor_embedding), a visualization technique for high dimensional data. Finally, we will use transfer learning to use pre-built embedding [glove](https://nlp.stanford.edu/projects/glove/) in our neural network to classify sentences.
 
-Although there are many deep learning frameworks like TensorFlow, Keras, Torch, and Caffee, MXNet is gaining popularity due to its scalability across multiple GPUs.
+Although there are many deep learning frameworks like TensorFlow, Keras, Torch, and Caffee, MXNet is gaining popularity due to its flexibility and scalability across multiple GPUs.
 
-This notebook expects you to have a basic understanding of convolution operation, neural network, activation units, gradient descent, and NumPy. 
+This notebook expects you to have a basic understanding of convolution operation, neural networks, activation units, gradient descent, and NumPy. 
 
 By the end of the notebook, you will be able to:  
 
@@ -13,20 +13,14 @@ By the end of the notebook, you will be able to:
 3. Prepare datasets for training the neural network.
 4. Implement custom neural network architecture for classifying sentiments using various different models.
 5. Visualize the result and understand our model using [t-sne](https://en.wikipedia.org/wiki/T-distributed_stochastic_neighbor_embedding). 
-6. Use prebuilt embedding like a glove to train on data with constraints (small dataset or small sentences). 
+6. Use a prebuilt embedding like `glove` to train on data with constraints (small dataset or small sentences). 
 
 ## Sentiment Analysis
-Sentiment analysis is a complex task. Understanding if a sentence expresses a positive or negative opinion is very difficult to predict. Let us a take sentence
+Sentiment analysis is a complex task. Understanding if a sentence expresses a positive or negative opinion is very difficult to predict. Take a sentence like this: "The movie was unintelligent, gross, and vulgar—but I loved it". Although the sentence contains a lot of negative words (unintelligent, gross, vulgar), the sentiment expressed is positive ("but I loved it"). Another sentence that can't be understood simply on the basis of individual words might be: "The movie doesn't care about cleverness, wit or any other kind of intelligence." Although the sentence contains a lot of positive words (cleverness, wit, intelligence), it expresses a negative review.
 
-like this, "The movie was unintelligent, gross and vulgar, but I loved it". Although the sentence contains a lot of negative words (unintelligent, gross, vulgar), the sentiment expressed is positive (but, I loved it). Some sentences can be like "The movie doesn't care about cleverness, wit or any other kind of intelligence." Although the sentence contains a lot of positive words (cleverness, wit, intelligence), it expresses a negative review)
-
-There can be some sentences which can be sarcastic ("Taken 3 makes Taken 2 a master piece."). We can understand this sentence expresses a negative review because we understand the context (Taken2 was not a great movie). 
-
-Another example would be "an infection is destroying white blood cells" and "white blood cells are destroying an infection". Although they contain the same words, they convey different sentiments.
+Some sentences are sarcastic, and/or they rely on context for their meaning ("_Taken 3_ makes _Taken 2_ a masterpiece."). We can understand this sentence expresses a negative review because we understand the context (_Taken 2_ was [not a great movie](https://www.rottentomatoes.com/m/taken_2_2012)). 
 
 Sentiment analysis is a very difficult task due to the context and its accuracy mostly depends on the dataset that's processed. A sentiment analyzer can perform very well on one dataset and poorly on another. The machine learning developer should be aware and check if their model captures the variation in the data. 
-
-*side note- Taken 3, Taken 2 and Taken are English movies. Taken was an enjoyable one.
 
 
 ## Encoding the dataset
@@ -40,30 +34,29 @@ Two sentences are formed out of this vocabulary.
 "I love cake"  
 "I hate pizza"
 
-How can we encode theses sentences as numbers? One way is to represent the vocabulary like an encoded matrix as shown below.
+How can we encode theses sentences as numbers? One way is to represent the vocabulary as an encoded matrix, using one-hot encoding:
 
 ![Alt text](images/vocab.png?raw=true "one hot encoded vocabulary")
 
 
-In this representation, if there are N words in the vocabulary, we need a matrix of size NXN. This matrix is called a vocabulary matrix. Vocabulary matrix forms the look-up table for the word.
+In this representation, if there are N words in the vocabulary, we need a matrix of size N×N. This matrix is called a _vocabulary matrix_. The vocabulary matrix forms the look-up table for the word.
 
-Now, let us try to encode the sentence.
-The Sentence "I hate pizza" will become a matrix shown below.
+Now, let's try to encode discourse. The sentence "I hate pizza" will become the following matrix:
 
 ![Alt text](images/sentence.png?raw=true "sentence encoding")
 
- If the word is present in the sentence, then the corresponding row of the vocabulary matrix is copied. This is the same operation that is performed by the embedding layer of the MXNet (or any other deep learning framework).
- [Embedding layer](http://mxnet.io/api/python/symbol.html#mxnet.symbol.Embedding) just performs the look up operations and should not be confused with [word-embedding](https://en.wikipedia.org/wiki/Word_embedding).
+ If the word is present in the sentence, then the corresponding row of the vocabulary matrix is copied. This is the same operation that is performed by the _embedding_ layer of the neural net in MXNet (or any other deep learning framework).
+ The ["embedding layer"](http://mxnet.io/api/python/symbol.html#mxnet.symbol.Embedding) just performs the look-up operations and should not be confused with [word-embedding](https://en.wikipedia.org/wiki/Word_embedding) (which we'll get to shortly!).
 
-Can we do better than one-code encoding the vocabulary? Is there a better way to represent the words? Word embedding solves this problem. Instead of discretizing the words, it provides a continuous representation of words. A word embedding matrix can look like the matrix shown below.
+Can we do better than one-hot encoding the vocabulary? Is there a better way to represent the words? Word embedding solves this problem. Instead of discretizing the words, it provides a continuous representation of words. A word embedding matrix can look like the matrix shown below.
 
 ![Alt text](images/embedding.png?raw=true "embedding matrix")
 
-Instead of representing the word as an NXN matrix, we represent the words with an N*3 matrix, where '3' is the embedding size. So each word can be represented as a 3-dimensional vector, instead of an N dimensional vector. 
+Instead of representing the word as an N×N matrix, we represent the words with an N × 3 matrix, where '3' is the embedding size. So each word can be represented as a 3-dimensional vector, instead of an N-dimensional vector of constant length ("1"). 
 
-Word embedding not only reduces the size of the representation of the vocabulary matrix but tries to bring semantic relationship between words. For example, "pizza" and "cake" have nearly similar word embedding vectors since both refer to the type of food. "Love" and "Hate" have the same magnitude in 2nd dimension since they convey feelings but entirely different magnitude in 1st dimension (0.9 and 0.1 respectively) since they convey opposite sentiments. 
+Word embedding not only reduces the size of the representation of the vocabulary matrix but tries to encode the semantic relationship between words. For example, "pizza" and "cake" have nearly similar word embedding vectors in this vocabulary since both refer to types of food. "Love" and "Hate" have the same magnitude in 2nd dimension since they convey feelings but entirely different magnitude in 1st dimension (0.9 and 0.1 respectively) since they convey opposite sentiments. 
 
-These embeddings can be learned by deep neural network automatically during sentiment classification. The embedding vector of particular words can be treated as weights that need to be learned by the deep neural network. The embedding techniques can be used on images and other data and commonly popularized as [autoencoder](https://en.wikipedia.org/wiki/Autoencoder) networks.
+Where do these vectors come from? These embeddings can be learned by your deep neural network automatically during sentiment classification! The embedding vectors of particular words can be treated as weights that need to be learned by the deep neural network. These embedding techniques can also be used on images and other data; they're commonly referred to as [autoencoder](https://en.wikipedia.org/wiki/Autoencoder) networks.
 
 
 ## Convolution on sentences.
@@ -75,7 +68,7 @@ Once the sentence has been encoded into a matrix using an embedding layer, we ca
  The convolution operation in the edges assumes the input is padded with zeros.
  This convolution operation will help you learn based on the [n-grams](https://en.wikipedia.org/wiki/N-gram) from the sequence.
 
-Next, we will look into how sentiment classification is performed using MXNet.
+Next, we will look into how sentiment classification is performed using MXNet, using a dataset of actual movie review sentences.
 
 
 ## Preparing your environment
@@ -90,7 +83,7 @@ Here's how to get set up:
 3. Then grab the Jupyter Notebook, with 'conda install jupyter notebook'.
 4. And then, get [MXNet](http://mxnet.io/get_started/install.html), an open source deep learning library.
 
-The next 3 steps help in visualizing the word-embedding and are not mandatory. I highly recommend visualizing the results though.
+The next 3 steps help in visualizing the word-embedding and are not mandatory, but I highly recommend visualizing the results.
 
 5. Next, we need [cython](https://anaconda.org/anaconda/cython) required for bhtnse
 6. We also need [bhtsne](https://github.com/dominiek/python-bhtsne), A c++, python implementation of tnse. Don't use scikit-learn's tnse implementation as it [crashes the python kernel](https://github.com/scikit-learn/scikit-learn/issues/4619). 
@@ -107,11 +100,11 @@ Here are the commands you need to type inside the anaconda environment (after it
 8. conda install -c anaconda matplotlib
 
 ## The data set
-In order to learn about any deep neural network, we need data. For this notebook, we use a movie review dataset from Stanford. You can download the data set [here](http://ai.stanford.edu/~amaas/data/sentiment/aclImdb_v1.tar.gz)
+In order to learn about any deep neural network, we need data. For this notebook, we'll use a movie review dataset from Stanford. You can download the data set [here](http://ai.stanford.edu/~amaas/data/sentiment/aclImdb_v1.tar.gz)
 
-The data set consists of 25000 samples in train set and 25000 samples in test set, with 12500 positive and 12500 negative sentiments in each set. We will only be using the training set that will be randomly split into train, validation and test sets. As discussed earlier, sentiment analysis is a complex task and its accuracy depends on the dataset. A model should be tested on a variety of data before deploying to production.
+The data set consists of 25,000 samples in a training set and 25,000 samples in test set, with 12,500 positive and 12,500 negative sentiments in each set. For the sake of speed and simplicity, we will only be using the training set that will be randomly split into train, validation and test sets. As discussed earlier, sentiment analysis is a complex task and its accuracy depends on the dataset. Your model should be tested on a variety of data before deploying to production.
 
-Here's the code for loading the data. We assign a label of 1 for positive sentiment and 0 for negative sentiment. We won't be one-hot encoding the labels since we will use [softmaxoutput](http://mxnet.io/api/python/symbol.html#mxnet.symbol.SoftmaxOutput) layer of MXnet to perform classification.
+Here's the code for loading the data. We assign a label of 1 for positive sentiment and 0 for negative sentiment. We won't be one-hot encoding the labels since we will use a [softmaxoutput](http://mxnet.io/api/python/symbol.html#mxnet.symbol.SoftmaxOutput) layer in MXnet to perform classification.
 
 In another framework, one-hot encoding the labels might be necessary.
 
@@ -141,9 +134,9 @@ negative_labels = [0 for _ in negative_sentiment]
 
 
 ## Preparing the dataset and encoding
-The reviews are cleaned to remove URLs, special characters, etc. You can also use the [nltk](http://www.nltk.org/) library to preprocess the text. We use a custom function to clean the data. Once the data is cleaned, we need to form the vocabulary (all the unique words available in a dataset).
+We'll need to start with standard data-preparation tasks. We'll clean the data to remove URLs, special characters, etc. While you can also use the [nltk](http://www.nltk.org/) library to preprocess the text, in this case we'll use a custom function to clean the data. Once the data is cleaned, we need to form the vocabulary (all the unique words available in a dataset).
 
-Next, we need to identify the most common words in the review.  This prevents rare words like 'director name, actor name' to influence the outcome of a classifier. We also map each word(sorted by descending order based on the frequency of occurrence) to a unique number which is stored in a dictionary called word_dict. We also perform the inverse mapping from the idx to the word. We use a vocabulary of 5000 words. The vocabulary size, sentences length, and embedding dimensions are also parameters and can be experimented with while building a neural network.
+Next, we need to identify the most common words in the review.  This prevents rare words like 'director name, actor name' to influence the outcome of a classifier. We also map each word(sorted by descending order based on the frequency of occurrence) to a unique number (`idx`) which is stored in a dictionary called word_dict. We also perform the inverse mapping from the idx to the word. We use a vocabulary of 5,000 words. The vocabulary size, sentence length, and embedding dimensions are also parameters and can be experimented with while building a neural network.
 
 ```python
 #some string preprocessing
@@ -255,7 +248,7 @@ X_train, X_val, y_train, y_validation = train_test_split(X_train_val, y_train_va
 
 ## Building the deepnet
 
-Now that we have preparedour data set, let's actually code the neural network. Building neural networks is something of a black art at this point in history; you never know which can suit your needs. We will start out with a simple dense network and then move on to complex neural network architecture.
+Now that we have prepared our data set, let's actually code the neural network. Building neural networks is something of a black art at this point in history; you never know which can suit your needs. We will start out with a simple dense network and then move on to complex neural network architecture.
 
 The neural network code is concise and simple, thanks to MXNet's symbolic API:
 
@@ -281,7 +274,7 @@ The vocab_embed layer performs the look up into the embedding matrix (which will
 ```python
 embed_layer_1 = mx.sym.Embedding(data=input_x_1, input_dim=vocab_size, output_dim=embedding_dim, name='vocab_embed')
 ```
-The flatten layer flattens the embedding layer weights with dimensions of seq_lenXembedding dimension into a column vector of 1X(seq_len*embedding) which serves the input for the next dense layer.
+The flatten layer flattens the embedding layer weights with dimensions of seq_len X embedding dimension into a column vector of 1 X (seq_len*embedding) which serves the input for the next dense layer.
 ```python
 flatten_1 = mx.sym.Flatten(data=embed_layer_1)
 ```
@@ -295,7 +288,7 @@ The relu3_1 layer performs non-linear activation on the input for learning compl
 relu3_1 = mx.sym.Activation(data=fc1_1, act_type="relu" , name="relu3")
 ```
 
-The final dense layer (softmax) performs the classification. The [SoftmaxOutput](http://mxnet.io/api/python/symbol.html#mxnet.symbol.SoftmaxOutput) layer in MXNet performs the one hot encoding of output then applies the softmax function. Please see the example in the documentation.
+The final dense layer (softmax) performs the classification. The [SoftmaxOutput](http://mxnet.io/api/python/symbol.html#mxnet.symbol.SoftmaxOutput) layer in MXNet performs the one-hot encoding of output then applies the softmax function. Please see the example in the documentation.
 
 ## Training the network
 We are training the network using GPUs since it's faster. A single pass-through of the training set is referred to as one "epoch," and we are training the network for 3 epochs "num_epoch = 3". We also periodically store the trained model in a JSON file, and measure the train and validation accuracy to see our neural network 'learn.' 
@@ -330,7 +323,7 @@ model.fit(
 
 
  ## Visualization
-The following code will help us to visualize the result and can provide some intuition about our model. We obtain the weights of embedding generated by our model. We then visualize the result using [tnse](https://en.wikipedia.org/wiki/T-distributed_stochastic_neighbor_embedding) visualization. 
+The following code will help us to visualize the result and can provide some intuition about our model. We can obtain the weights of embedding generated by our model, and then visualize the result using [tnse](https://en.wikipedia.org/wiki/T-distributed_stochastic_neighbor_embedding) visualization. 
 
 Visualizing vocab-size*embedding_dim (5000*500) vector in 2-d is impossible. We need to reduce the dimensionality of the data in order to visualize it. t-nse is a popular visualization technique that can reduce the dimensionality so that the vectors that are closer in N (500) dimensions are close together in lower dimension(2). It basically combines the N dimension vector into a reduced dimension with minimal loss of information. t-sne is very similar to [PCA](https://en.wikipedia.org/wiki/Principal_component_analysis).
 
@@ -355,11 +348,11 @@ for idx, (x, y) in enumerate(zip(Y[:, 0], Y[:, 1])):
 Here is the t-nse visualization of the weights of top 500 words:
 ![Alt text](images/embedding1.png?raw=true "t-nse visualization")
 
-The visualization shows that the model automatically learnt that the words "excellent, wonderful, amazing" mean the same thing. This is quite wonderful. Next, we will write a simple predict function to use the model generated.
+The visualization shows that the model automatically learnt that the words "excellent, wonderful, amazing" mean the same thing. This is quite wonderful! Next, we will write a simple predict function to use the model generated.
 
 ## Sample prediction 
 
-Lets us use this model to predict our sentences. For this, we need to load the saved model as follows
+Lets us use this model to predict our sentences. For this, we need to load the saved model as follows:
 
 ```
 # Load the model from the checkpoint . We are loading the 10 epoch
@@ -396,11 +389,11 @@ The output is
 [ 0.09290998  0.90709001] which means, the classifier predicts the sentiment is positive with 0.90 probability.
 ```
 
-Next, we will look into convolution network for sentiment classifier which can capture information in n-grams.
+Next, we will look into a convolutional network for sentiment classification which can capture information in n-grams.
 
 
-## Building the convolution model.
-As discussed earlier, to develop a model based on n-grams, we need a convolution neural network. So let us develop one. This is very similar to the previous model but has a convolution filter of size 5.
+## Building the convolutional model.
+As discussed earlier, to develop a model based on n-grams, we need a convolutional neural network. So let us develop one. This is very similar to the previous model but has a convolution filter of size 5.
 
 ```python
 #a model with convolution kernel of 5 (5-grams)
@@ -413,14 +406,14 @@ fc2_2 = mx.sym.FullyConnected(data=flatten_2, num_hidden=2,name="final_fc")
 convnet = mx.sym.SoftmaxOutput(data=fc2_2, name='softmax')
 ```
 
-The only tricky thing is the 'conv_input_2' input layer. This layer reshapes the output from the embedding layer into a format that is needed by the convolution layer. Everything else remains the same. This model can be trained using model.fit function and various insights can be obtained.
+The only tricky thing is the 'conv_input_2' input layer. This layer reshapes the output from the embedding layer into a format that is needed by the convolutional layer. Everything else remains the same. This model can be trained using model.fit function and various insights can be obtained.
 
 ## Building the 'multiple convolution' model.
 
-This is similar to the previous model, except that we use convolution of different sizes (3,4,5) for developing a model based on 3-gram,4-gram,5-gram, then concatenate and flatten the output. A maxpool layer is added to prevent over fitting. Below is the code in python
+This is similar to the previous model, except that we use convolutions of different sizes (3,4,5) for developing a model based on 3-grams, 4-grams, and 5-grams, then concatenate and flatten the output. A maxpool layer is added to prevent overfitting. Below is the code in python
 
 ```
-# a model with convolution filters of 3,4,5 (3-gram,4-grams,5-grams)
+# a model with convolution filters of 3, 4, 5 (3-gram,4-grams,5-grams)
 input_x_3= mx.sym.Variable('data')
 embed_layer_3 = mx.sym.Embedding(data=input_x_3, input_dim=vocab_size, output_dim=embedding_dim, name='vocab_embed')
 conv_input_3 = mx.sym.Reshape(data=embed_layer_3, target_shape=(batch_size, 1, seq_len, embedding_dim))
@@ -453,7 +446,7 @@ convnet_combined = mx.sym.SoftmaxOutput(data=fc2_3, name='softmax')
 ## Transfer learning from glove
 The embedding we generated using the neural network gives us lot of insights. But to generate an embedding, we need a lot of data. What if we are restricted to a small amount of data? Transferring weights from a different pre-trained neural network can be very useful. This helps to build a model even with a small amount of data.
 
-Here, we will use [glove](https://nlp.stanford.edu/projects/glove/) embedding developed by Stanford. We will use the Wikipedia - 2014 glove embedding. This embedding was trained on Wikipedia corpus of 6 billion words. The embedding itself has 400k unique words (the vocabulary) and contains embedding with various dimensions ( 50,100,200,300). We will use the 50 dimension embedding. The following functions load the embedding vector into an embedding matrix (NumPy matrix)
+Here, we will use the [glove](https://nlp.stanford.edu/projects/glove/) embedding developed by Stanford. We will use the Wikipedia - 2014 glove embedding. This embedding was trained on Wikipedia corpus of 6 billion words. The embedding itself has 400k unique words (the vocabulary) and contains embedding with various dimensions ( 50,100,200,300). We will use the 50 dimension embedding. The following functions load the embedding vector into an embedding matrix (numPy matrix):
 
 ```python
 #loads glove word embedding 
@@ -546,7 +539,7 @@ model_3.fit(
     allow_missing= True
 ```
 
-## Conculsion.
+## Conclusion.
 
 In this notebook, we performed sentiment classification on a movie review dataset. We developed models of varying complexity using MXNet and understood the important concept of embedding and a way to visualize the weights learnt by our model. In the end, we also performed transfer learning using glove embedding.
 
