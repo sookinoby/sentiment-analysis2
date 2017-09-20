@@ -1,11 +1,12 @@
-# Sentiment analysis using MXNet
+# Sentiment analysis using Apache MXNet
 
 Sentiment analysis is a common task in the data-science world. A company may want to monitor mentions of its products on Twitter or Facebook in order to detect (and resolve!) customer satisfaction issues proactively. But human language is rich and complex; there are myriad ways to feel positive or negative emotion about something—and for each of those feelings there are in turn many ways to express that feeling! Among [machine learning technique for sentiment analysis](http://www.sciencedirect.com/science/article/pii/S2090447914000550), deep learning has proven to excel at making sense of these complex inputs.
 
 
-In this notebook, we are going to classify sentiment by building a neural network using Apache MXNet. Ultimately, we'll build up to a classifier that can take the text of a brief movie review as input and try to identify it and express a positive or negative opinion about the movie. We will start with a simple dense model and then build a model similar to the convolutional architecture described in [ this paper by Yoon Kim](https://arxiv.org/abs/1408.5882). We will also visualize the output using [t-nse](https://en.wikipedia.org/wiki/T-distributed_stochastic_neighbor_embedding), a visualization technique for high dimensional data. Finally, we will use transfer learning to use the pre-built embedding [glove](https://nlp.stanford.edu/projects/glove/) in our neural network to classify sentences.
+In this tutorial, we are going to classify sentiment by building a neural network using Apache MXNet. Ultimately, we'll build up to a classifier that can take the text of a brief movie review as input and try to identify it and express a positive or negative opinion about the movie. We will start with a simple dense model and then build a model similar to the convolutional architecture described in [this paper by Yoon Kim](https://arxiv.org/abs/1408.5882). We will also visualize the output using [t-nse](https://en.wikipedia.org/wiki/T-distributed_stochastic_neighbor_embedding), a visualization technique for high dimensional data. Finally, we will use transfer learning to use the pre-built embedding [glove](https://nlp.stanford.edu/projects/glove/) in our neural network to classify sentences. Although there are many deep learning frameworks like TensorFlow, Keras, Torch, and Caffe, Apache MXNet is gaining popularity due to its flexibility and scalability across multiple GPUs.
 
-Although there are many deep learning frameworks like TensorFlow, Keras, Torch, and Caffee, MXNet is gaining popularity due to its flexibility and scalability across multiple GPUs.
+I encourage you to download [the notebook](https://github.com/sookinoby/sentiment-analysis2/blob/master/mxnet_sentiment_analysis.ipynb) where we've created and run all this code, and play with it! Adjust the hyperparameters and experiment with different approaches to neural network architecture or data preparation—and see if you can beat our accuracy.  
+
 
 This notebook expects you to have a basic understanding of convolution operation, neural networks, activation units, gradient descent, and NumPy. 
 
@@ -541,10 +542,10 @@ model_3.fit(
     arg_params={'weights': weight_matrix}, #loads the pretrained glove embedding to weights variable
     allow_missing= True
 ```
-If you notice the using glove word-embedding (pre-trained word embedding) for this particular dataset does not provide a better model. Experimenting with different dimensions of word-embedding and using higher capacity model (more neurons) may improve performance. Also, we can experiment with [recursive neural network](https://en.wikipedia.org/wiki/Recursive_neural_network) like [LTSM](https://mxnet.incubator.apache.org/api/python/rnn.html#mxnet.rnn.LSTMCell) , [GRU](https://mxnet.incubator.apache.org/api/python/rnn.html#mxnet.rnn.GRUCell)  to improve [performance](https://arxiv.org/pdf/1702.01923.pdf). 
+You probably noticed that the using glove word-embedding (pre-trained word embedding) for this particular dataset does not provide a better model. Experimenting with different dimensions of word-embedding and using higher capacity model (more neurons) may improve performance. [Download the notebook and](https://github.com/sookinoby/sentiment-analysis2/blob/master/mxnet_sentiment_analysis.ipynb) see if you can make it work better! You might also consider experimenting with [recursive neural networks](https://en.wikipedia.org/wiki/Recursive_neural_network) like [LTSM](https://mxnet.incubator.apache.org/api/python/rnn.html#mxnet.rnn.LSTMCell) or [GRU](https://mxnet.incubator.apache.org/api/python/rnn.html#mxnet.rnn.GRUCell)  to improve [performance](https://arxiv.org/pdf/1702.01923.pdf). 
 
 ## Conclusion.
 
-In this notebook, we performed sentiment classification on a movie review dataset. We developed models of varying complexity using MXNet and understood the important concept of embedding and a way to visualize the weights learnt by our model. In the end, we also performed transfer learning using glove embedding.
+In this tutorial, we performed sentiment classification on a movie review dataset. We developed models of varying complexity using MXNet and understood the important concept of embedding and a way to visualize the weights learnt by our model. In the end, we also performed transfer learning using glove embedding.
 
 In our next tutorial, we will learn how deep learning can be used to generate new images, sound, etc. These types of models are called generative models.
