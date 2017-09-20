@@ -58,12 +58,12 @@ Instead of representing the word as an N×N matrix, we represent the words with 
 
 Word embedding not only reduces the size of the representation of the vocabulary matrix but tries to encode the semantic relationship between words. For example, "pizza" and "cake" have nearly similar word embedding vectors in this vocabulary since both refer to types of food. "Love" and "Hate" have the same magnitude in 2nd dimension since they convey feelings but entirely different magnitude in 1st dimension (0.9 and 0.1 respectively) since they convey opposite sentiments. 
 
-Where do these vectors come from? These word embeddings can be learned by your deep neural network automatically during sentiment classification! The embedding vectors of particular words can be treated as weights that need to be learned by the deep neural network. These embedding techniques can also be used on images and other data; they're commonly referred to as [autoencoder](https://en.wikipedia.org/wiki/Autoencoder) networks. 
+Where do these vectors come from? These word embeddings can be learned by your deep neural network automatically during sentiment classification! The embedding vectors of particular words can be treated as weights that need to be learned by the deep neural network. These embedding techniques can also be used on images and other data; they're commonly referred to as [autoencoder](https://en.wikipedia.org/wiki/Autoencoder) networks. Basically, autoecoder tries to represent the given input in lower dimension space with least possible information loss. A detailed explanation can be found [here](https://deeplearning4j.org/deepautoencoder).
 
 
 ## Convolution on sentences.
 
-Once the sentence has been encoded into a matrix using an embedding layer, we can perform the [1D convolution](https://stats.stackexchange.com/questions/199702/1d-convolution-in-neural-networks) on the encoded matrix. The size of the convolution filter depends on [n-grams](https://en.wikipedia.org/wiki/N-gram) we would like to use.  
+Once the sentence has been encoded into a matrix using an embedding layer, we can perform the [1D convolution](https://datascience.stackexchange.com/questions/17241/what-is-an-1d-convolutional-layer-in-deep-learning) on the encoded matrix. It is very similar to [2D convolution](https://mxnet.incubator.apache.org/tutorials/python/mnist.html) performed on 2D images.The size of the convolution filter depends on [n-grams](https://en.wikipedia.org/wiki/N-gram) we would like to use.  
 
 ![Alt text](images/embedding.png?raw=true " Convolution operation")
 
@@ -540,7 +540,7 @@ model_3.fit(
     arg_params={'weights': weight_matrix}, #loads the pretrained glove embedding to weights variable
     allow_missing= True
 ```
-If you notice the using glove word-embedding (pre-trained word embedding) for this particular dataset does not provide a better model. Experimenting with different dimensions of word-embedding and using higher capacity model (more neurons) may improve performance.
+If you notice the using glove word-embedding (pre-trained word embedding) for this particular dataset does not provide a better model. Experimenting with different dimensions of word-embedding and using higher capacity model (more neurons) may improve performance. Also, we can experiment with [recursive neural network](https://en.wikipedia.org/wiki/Recursive_neural_network) like [LTSM](https://mxnet.incubator.apache.org/api/python/rnn.html#mxnet.rnn.LSTMCell) , [GRU](https://mxnet.incubator.apache.org/api/python/rnn.html#mxnet.rnn.GRUCell)  to improve [performance](https://arxiv.org/pdf/1702.01923.pdf). 
 
 ## Conclusion.
 
