@@ -295,7 +295,7 @@ relu3_1 = mx.sym.Activation(data=fc1_1, act_type="relu" , name="relu3")
 The final dense layer (softmax) performs the classification. The [SoftmaxOutput](http://mxnet.io/api/python/symbol.html#mxnet.symbol.SoftmaxOutput) layer in MXNet performs the one-hot encoding of output then applies the softmax function.
 
 ## Training the network
-We are training the network using GPUs since it's faster [up to 91% faster!](https://mxnet.incubator.apache.org/how_to/perf.html). This increases development speed and time-to-product release, of course, but also keeps development costs down. A single pass-through of the training set is referred to as one "epoch," and we are training the network for 3 epochs "num_epoch = 3". We also periodically store the trained model in a JSON file, and measure the train and validation accuracy to see our neural network 'learn.' 
+We are training the network using GPUs since it's faster—[up to 91% less time to train!](https://mxnet.incubator.apache.org/how_to/perf.html). This increases development speed and time-to-product release, of course, but also keeps development costs down. A single pass-through of the training set is referred to as one "epoch," and we are training the network for 3 epochs "num_epoch = 3". We also periodically store the trained model in a JSON file, and measure the train and validation accuracy to see our neural network 'learn.' 
 
 Here is the code: 
 ```python
