@@ -20,15 +20,19 @@ By the end of the notebook, you will be able to:
 6. Use a prebuilt embedding like `glove` to train on data with constraints (small dataset or small sentences). 
 
 ## Sentiment Analysis
+<comment>  A brief introdcution to NLP here would be good and then you can introduce Sentiment Analysis under that umbrella.
+
 Sentiment analysis is a complex task; understanding if a sentence expresses a positive or negative opinion is very difficult. Take a sentence like this: "The movie was unintelligent, gross, and vulgar—but I loved it". Although the sentence contains a lot of negative words (unintelligent, gross, vulgar), the sentiment expressed is positive ("but I loved it"). Another sentence that can't be understood simply on the basis of individual words might be: "The movie doesn't care about cleverness, wit or any other kind of intelligence." Although the sentence contains a lot of positive words (cleverness, wit, intelligence), it expresses a negative review.
 
 Some sentences are sarcastic, and/or they rely on context for their meaning ("_Taken 3_ makes _Taken 2_ a masterpiece."). We can understand this sentence expresses a negative review because we understand the context (_Taken 2_ was [not a great movie](https://www.rottentomatoes.com/m/taken_2_2012)). 
 
 Sentiment analysis is a very difficult task due to the context and its accuracy mostly depends on the dataset that's processed. A sentiment analyzer can perform very well on one dataset and poorly on another. The machine learning developer should be aware and check if their model captures the variation in the data in order to avoid [embarrassing failures](https://www.recode.net/2015/6/30/11564016/machine-learning-is-hard-google-photos-has-egregious-facial).  
 
+<comment> A simple diagram with a network would be helpful in this case with the inputs hidden layers and output layers represented to implement this further along
 
 ## Encoding the dataset
 The futher we move from tabular data, the trickier it becomes to encode the data for processing. Compared to text, even encoding an image into numbers is a fairly straight forward process. Each pixel can only take values from 0-255 in RGB color space, and these values are in a two-dimensional array. Resizing of an image doesn't affect the content of the image, so we can relatively easily (building on the work of image processing experts) standardize our inputs into comparable arrays. 
+
 
 Encoding natural language (words) into numbers, however, is not straight forward. A language can have huge vocabulary and sentences formed using those words can be of varying lengths. Sometimes, resizing sentences can change their meaning completely. 
 
